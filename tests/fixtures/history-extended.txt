@@ -1,0 +1,7 @@
+: 1790405205:0;echo hello
+: 1790405205:0;git log --oneline
+: 1790405205:0;printf "a\
+b\
+c\
+"
+: 1790405205:0;echo xin ch√ÉÄo c√ÉÅc b·∫ÉÅn

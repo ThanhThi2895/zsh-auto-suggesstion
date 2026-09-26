@@ -1,0 +1,6 @@
+echo hello
+git status
+echo line1 \
+line2 continued
+echo xin chÃƒ€o cÃƒc báºƒn
+ls -la ~/

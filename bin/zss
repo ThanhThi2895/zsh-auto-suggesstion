@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Shim so `zss` works without installing the package: adds the repo root to
+# PYTHONPATH (so `import zss` resolves) and execs the stdlib interpreter.
+set -euo pipefail
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PYTHONPATH="${REPO_ROOT}${PYTHONPATH:+:${PYTHONPATH}}"
+exec /usr/bin/env python3 -m zss "$@"

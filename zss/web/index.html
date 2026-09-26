@@ -1,0 +1,1299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>zss · History</title>
+<link rel="icon" href="data:,">
+<style>
+  :root {
+    --bg: #fbfbfc;
+    --sidebar: #f4f4f6;
+    --surface: #ffffff;
+    --surface-2: #f7f7f9;
+    --hover: #f2f2f5;
+    --active: #ebebf0;
+    --line: #e8e8ec;
+    --line-strong: #d9d9e0;
+    --fg: #17171c;
+    --fg-2: #4b4d57;
+    --fg-3: #80828d;
+    --fg-4: #a8aab3;
+    --accent: #5e5ce6;
+    --accent-hover: #4f4dd6;
+    --accent-soft: rgba(94, 92, 230, .09);
+    --accent-line: rgba(94, 92, 230, .45);
+    --on-accent: #fff;
+    --danger: #d93036;
+    --danger-hover: #c2292f;
+    --danger-soft: rgba(217, 48, 54, .08);
+    --warn: #b06a00;
+    --warn-soft: rgba(230, 150, 20, .12);
+    --ok: #1f8a4c;
+    --ok-soft: rgba(31, 138, 76, .10);
+    --mark: rgba(255, 196, 0, .35);
+    --overlay: rgba(20, 20, 28, .28);
+    --shadow-sm: 0 1px 2px rgba(16, 16, 24, .05);
+    --shadow-lg: 0 0 0 1px rgba(16, 16, 24, .06), 0 12px 32px -4px rgba(16, 16, 24, .16), 0 4px 8px -2px rgba(16, 16, 24, .06);
+    --toast-bg: #1d1d23;
+    --toast-fg: #f2f2f5;
+    --term-bg: #16171b;
+    --term-fg: #d7d8dc;
+
+    /* ANSI palette used to render zsh-syntax-highlighting styles */
+    --ansi-black: #3b3d45; --ansi-red: #d13f3f; --ansi-green: #22883f; --ansi-yellow: #a86a00;
+    --ansi-blue: #3867d6; --ansi-magenta: #a33ea8; --ansi-cyan: #0e7f8c; --ansi-white: #6f7280;
+    --ansi-8: #9a9ca6; --ansi-default: var(--fg);
+
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+    --r-sm: 5px; --r: 7px; --r-lg: 10px;
+    --row-h: 38px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0c0d10;
+      --sidebar: #0f1013;
+      --surface: #131418;
+      --surface-2: #17181d;
+      --hover: #1a1b21;
+      --active: #202128;
+      --line: #212228;
+      --line-strong: #2c2d35;
+      --fg: #ececf1;
+      --fg-2: #b4b6bf;
+      --fg-3: #7d808b;
+      --fg-4: #585a64;
+      --accent: #7c7bf4;
+      --accent-hover: #908ff6;
+      --accent-soft: rgba(124, 123, 244, .13);
+      --accent-line: rgba(124, 123, 244, .5);
+      --on-accent: #0c0d10;
+      --danger: #f2555a;
+      --danger-hover: #f56c71;
+      --danger-soft: rgba(242, 85, 90, .12);
+      --warn: #e8ac45;
+      --warn-soft: rgba(232, 172, 69, .12);
+      --ok: #45c177;
+      --ok-soft: rgba(69, 193, 119, .12);
+      --mark: rgba(255, 196, 0, .25);
+      --overlay: rgba(0, 0, 0, .55);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, .3);
+      --shadow-lg: 0 0 0 1px rgba(255, 255, 255, .06), 0 16px 40px -6px rgba(0, 0, 0, .6), 0 4px 10px -2px rgba(0, 0, 0, .4);
+      --toast-bg: #f2f2f5;
+      --toast-fg: #17171c;
+      --term-bg: #0a0b0d;
+
+      --ansi-black: #5a5d68; --ansi-red: #ff6b6b; --ansi-green: #5fd38a; --ansi-yellow: #f0c05a;
+      --ansi-blue: #6fa0ff; --ansi-magenta: #d98cf0; --ansi-cyan: #5fd3e0; --ansi-white: #d7d8dc;
+      --ansi-8: #6c6f7a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font: 13px/1.5 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent-line); outline-offset: 1px; }
+  .mono { font-family: var(--mono); font-size: 12.5px; font-variant-ligatures: none; }
+  kbd {
+    display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 4px;
+    font: 500 10.5px/1 var(--sans); color: var(--fg-3);
+    background: var(--surface); border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: 4px;
+  }
+  svg.i { width: 15px; height: 15px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* ---------- shell ---------- */
+  /* the app fills the viewport; each view pins its header + toolbar and only its list scrolls */
+  .app { display: grid; grid-template-columns: 228px minmax(0, 1fr); height: 100vh; height: 100dvh; overflow: hidden; }
+  .side {
+    position: sticky; top: 0; height: 100vh;
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 14px 10px; background: var(--sidebar); border-right: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 16px; }
+  .logo {
+    width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center;
+    background: linear-gradient(145deg, var(--accent), #9a5ee6); color: #fff;
+    font: 700 13px/1 var(--mono); box-shadow: inset 0 1px 0 rgba(255,255,255,.25), var(--shadow-sm);
+  }
+  .brand b { display: block; font-size: 13.5px; font-weight: 600; letter-spacing: -.01em; }
+  .brand span { display: block; font: 11px/1.3 var(--mono); color: var(--fg-3); }
+  .nav-label { padding: 12px 10px 4px; font-size: 11px; font-weight: 500; color: var(--fg-4); }
+  .nav a {
+    display: flex; align-items: center; gap: 10px; height: 30px; padding: 0 10px;
+    border-radius: var(--r-sm); color: var(--fg-2); text-decoration: none; font-weight: 500;
+  }
+  .nav a:hover { background: var(--hover); color: var(--fg); }
+  .nav a[aria-current="page"] { background: var(--active); color: var(--fg); }
+  .nav a[aria-current="page"] svg { color: var(--accent); }
+  .nav a .count { margin-left: auto; font: 11px var(--mono); color: var(--fg-3); }
+  .side-foot { margin-top: auto; padding: 10px; display: grid; gap: 10px; font-size: 11.5px; color: var(--fg-3); }
+  .status { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; }
+  .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); }
+  .keys { display: grid; grid-template-columns: auto 1fr; gap: 5px 8px; align-items: center; }
+
+  main { min-width: 0; min-height: 0; display: flex; flex-direction: column; padding: 26px 36px 28px; transition: padding-bottom .16s ease-out; }
+  /* leave room under the list for the floating selection bar */
+  body.has-sel main { padding-bottom: 80px; }
+  .page { flex: 1; min-height: 0; width: 100%; max-width: 1060px; margin: 0 auto; display: flex; flex-direction: column; }
+  .page > * { flex: none; }
+  .head { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 18px; }
+  .head h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -.015em; }
+  .head p { margin: 3px 0 0; color: var(--fg-3); }
+  .head .grow { flex: 1; }
+
+  /* ---------- controls ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: 28px; padding: 0 11px; border-radius: var(--r-sm); white-space: nowrap;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--fg);
+    font-weight: 500; font-size: 12.5px; box-shadow: var(--shadow-sm);
+    transition: background .12s, border-color .12s, color .12s;
+  }
+  .btn:hover { background: var(--hover); }
+  .btn:active { background: var(--active); }
+  .btn:disabled { opacity: .45; cursor: default; pointer-events: none; }
+  .btn.primary { background: var(--accent); border-color: transparent; color: var(--on-accent); }
+  .btn.primary:hover { background: var(--accent-hover); }
+  .btn.danger { background: var(--danger); border-color: transparent; color: #fff; }
+  .btn.danger:hover { background: var(--danger-hover); }
+  .btn.ghost { background: transparent; border-color: transparent; box-shadow: none; color: var(--fg-2); }
+  .btn.ghost:hover { background: var(--hover); color: var(--fg); }
+  .btn .n { font-family: var(--mono); font-size: 11.5px; opacity: .85; }
+  .btn.busy { pointer-events: none; }
+  .btn.busy::before {
+    content: ""; width: 11px; height: 11px; border-radius: 50%;
+    border: 1.6px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .icon-btn {
+    width: 26px; height: 26px; display: grid; place-items: center; padding: 0;
+    border: 0; border-radius: var(--r-sm); background: transparent; color: var(--fg-3);
+  }
+  .icon-btn:hover { background: var(--active); color: var(--fg); }
+  .icon-btn.warn:hover { color: var(--danger); background: var(--danger-soft); }
+
+  .toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .search {
+    position: relative; flex: 1; max-width: 420px;
+  }
+  .search svg { position: absolute; left: 10px; top: 50%; translate: 0 -50%; color: var(--fg-3); }
+  .search kbd { position: absolute; right: 7px; top: 50%; translate: 0 -50%; }
+  .field {
+    width: 100%; height: 32px; padding: 0 10px; border-radius: var(--r);
+    border: 1px solid var(--line-strong); background: var(--surface); outline: none;
+    box-shadow: var(--shadow-sm); transition: border-color .12s, box-shadow .12s;
+  }
+  .search .field { padding: 0 34px 0 32px; }
+  .field::placeholder { color: var(--fg-4); }
+  .field:focus { border-color: var(--accent-line); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .field.mono { font-size: 12.5px; }
+  .field.invalid { border-color: var(--danger); box-shadow: 0 0 0 3px var(--danger-soft); }
+  .seg {
+    display: inline-flex; padding: 2px; gap: 2px; border-radius: var(--r);
+    background: var(--active); border: 1px solid var(--line);
+  }
+  .seg button {
+    height: 26px; padding: 0 10px; border: 0; border-radius: 5px; background: transparent;
+    color: var(--fg-3); font-weight: 500; font-size: 12.5px;
+  }
+  .seg button:hover { color: var(--fg); }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--fg); box-shadow: var(--shadow-sm); }
+  .meta { margin-left: auto; color: var(--fg-3); font-size: 12px; }
+  .meta b { color: var(--fg-2); font-weight: 500; font-family: var(--mono); font-size: 11.5px; }
+
+  .check {
+    appearance: none; width: 15px; height: 15px; margin: 0; border-radius: 4px; flex: none;
+    border: 1.5px solid var(--line-strong); background: var(--surface); display: grid; place-items: center; cursor: pointer;
+  }
+  .check:hover { border-color: var(--fg-4); }
+  .check:checked, .check:indeterminate { background: var(--accent); border-color: var(--accent); }
+  .check:checked::after { content: ""; width: 7px; height: 4px; border: solid #fff; border-width: 0 0 1.8px 1.8px; rotate: -45deg; translate: 0 -1px; }
+  .check:indeterminate::after { content: ""; width: 7px; height: 1.8px; background: #fff; border-radius: 1px; }
+
+  /* ---------- list ---------- */
+  .list { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-sm); overflow: hidden; }
+  /* the list is the only scroller: it shrinks to fit short content and scrolls when longer than the space left */
+  .page > .list, .colors > .list {
+    flex: 0 1 auto; min-height: 120px; overflow: auto; overscroll-behavior: contain;
+    scroll-padding-top: 34px; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent;
+  }
+  .lh, .row { display: grid; align-items: center; gap: 12px; padding: 0 10px 0 14px; }
+  .cols-hist { grid-template-columns: 16px minmax(0, 1fr) 118px 84px 64px; }
+  .cols-block { grid-template-columns: 16px minmax(0, 1fr) 150px 64px; }
+  .cols-bak { grid-template-columns: 16px minmax(0, 1fr) 150px 96px; }
+  .lh {
+    height: 34px; border-bottom: 1px solid var(--line); background: var(--surface-2);
+    font-size: 11.5px; font-weight: 500; color: var(--fg-3);
+    position: sticky; top: 0; z-index: 3;
+  }
+  .lh .r, .row .r { text-align: right; justify-self: end; }
+  .row { min-height: var(--row-h); border-bottom: 1px solid var(--line); position: relative; }
+  .row:last-child { border-bottom: 0; }
+  .row:hover, .row.cursor { background: var(--hover); }
+  .row.cursor::before { content: ""; position: absolute; left: 0; top: 6px; bottom: 6px; width: 2px; border-radius: 2px; background: var(--fg-4); }
+  .row.selected { background: var(--accent-soft); }
+  .row.selected::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); }
+  .row .actions { display: flex; gap: 2px; justify-content: flex-end; opacity: 0; transition: opacity .1s; }
+  .row:hover .actions, .row.cursor .actions, .row:focus-within .actions { opacity: 1; }
+  @media (hover: none) { .row .actions { opacity: 1; } }
+  .cmd { min-width: 0; display: flex; align-items: center; gap: 8px; }
+  .cmd code { font: 12.5px/1.5 var(--mono); font-variant-ligatures: none; white-space: pre; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .chip {
+    flex: none; display: inline-flex; align-items: center; gap: 4px; height: 18px; padding: 0 6px; border-radius: 4px;
+    font: 500 10.5px/1 var(--sans); color: var(--fg-3); background: var(--active);
+  }
+  .chip.warn { color: var(--warn); background: var(--warn-soft); }
+  .chip.ok { color: var(--ok); background: var(--ok-soft); }
+  .chip.accent { color: var(--accent); background: var(--accent-soft); }
+  mark { background: var(--mark); color: inherit; border-radius: 2px; }
+  .runs { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .runs .bar { width: 44px; height: 4px; border-radius: 2px; background: var(--active); overflow: hidden; }
+  .runs .bar i { display: block; height: 100%; background: var(--fg-4); border-radius: 2px; }
+  .row:hover .runs .bar i { background: var(--accent); }
+  .runs span { font: 12px var(--mono); color: var(--fg-2); min-width: 28px; text-align: right; }
+  .when { color: var(--fg-3); font-size: 12px; text-align: right; }
+  .more { display: flex; justify-content: center; padding: 10px; border-top: 1px solid var(--line); }
+
+  .skel { height: 10px; border-radius: 4px; background: linear-gradient(90deg, var(--active), var(--hover), var(--active)); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  .empty { padding: 56px 20px; text-align: center; color: var(--fg-3); }
+  .empty .glyph { width: 40px; height: 40px; margin: 0 auto 12px; border-radius: 10px; display: grid; place-items: center; background: var(--active); color: var(--fg-3); }
+  .empty b { display: block; color: var(--fg); font-weight: 500; margin-bottom: 2px; }
+
+  /* ---------- inline editor ---------- */
+  .editor {
+    grid-column: 1 / -1; padding: 12px 14px 14px 42px; background: var(--surface-2);
+    border-bottom: 1px solid var(--line); position: relative;
+  }
+  .editor::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--accent); }
+  .editor .label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; color: var(--fg-3); }
+  .editor .label b { color: var(--fg); font-weight: 500; }
+  .editor .field { height: 34px; font-family: var(--mono); font-size: 13px; }
+  .trim { margin-top: 8px; font: 12px/1.6 var(--mono); color: var(--fg-3); white-space: pre-wrap; word-break: break-all; }
+  .trim .keep { color: var(--fg); background: var(--accent-soft); border-radius: 3px; box-shadow: 0 0 0 1px var(--accent-soft); }
+  .trim .cut { text-decoration: line-through; text-decoration-color: var(--fg-4); color: var(--fg-4); }
+  .impact {
+    display: flex; align-items: flex-start; gap: 10px; margin-top: 10px; padding: 9px 11px;
+    border-radius: var(--r); border: 1px solid var(--line); background: var(--surface); font-size: 12.5px; color: var(--fg-2);
+  }
+  .impact svg { margin-top: 2px; color: var(--fg-3); }
+  .impact.hot { border-color: color-mix(in srgb, var(--danger) 30%, transparent); background: var(--danger-soft); }
+  .impact.hot svg { color: var(--danger); }
+  .impact strong { color: var(--fg); font-weight: 600; font-family: var(--mono); font-size: 12px; }
+  .impact .err { color: var(--danger); }
+  .editor .btns { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+  .editor .btns .hint { margin-left: auto; font-size: 11.5px; color: var(--fg-4); display: flex; gap: 6px; align-items: center; }
+
+  /* ---------- blocked ---------- */
+  .add-rule { display: flex; gap: 8px; }
+  .add-rule .field { font-family: var(--mono); font-size: 12.5px; }
+  .card { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow-sm); padding: 14px; margin-bottom: 14px; }
+  .card h2 { margin: 0 0 2px; font-size: 13px; font-weight: 600; }
+  .card > p { margin: 0 0 12px; color: var(--fg-3); font-size: 12.5px; }
+  .prefix-tail { color: var(--fg-4); font-family: var(--mono); font-size: 12.5px; margin-left: -6px; }
+
+  /* ---------- backups ---------- */
+  .group { padding: 16px 14px 6px; font-size: 11.5px; font-weight: 500; color: var(--fg-3); border-bottom: 1px solid var(--line); background: var(--surface-2); position: sticky; top: 0; z-index: 3; }
+  .bak-when b { font-weight: 500; }
+  .bak-when span { color: var(--fg-3); margin-left: 8px; font-size: 12px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--fg-4); justify-self: center; }
+  .dot.latest { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+  /* ---------- colors ---------- */
+  .colors { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: minmax(0, 1fr); gap: 20px; align-items: start; }
+  .colors > .list { max-height: 100%; }
+  .term {
+    max-height: 100%; overflow: auto; border-radius: var(--r-lg);
+    background: var(--term-bg); color: var(--term-fg); box-shadow: var(--shadow-lg);
+    /* the preview is always a dark terminal, so pin the dark ANSI palette */
+    --ansi-black: #5a5d68; --ansi-red: #ff6b6b; --ansi-green: #5fd38a; --ansi-yellow: #f0c05a;
+    --ansi-blue: #6fa0ff; --ansi-magenta: #d98cf0; --ansi-cyan: #5fd3e0; --ansi-white: #d7d8dc;
+    --ansi-8: #6c6f7a; --ansi-default: #d7d8dc;
+  }
+  .term-bar { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: #3a3b42; }
+  .term-bar span { margin-left: 8px; font: 11px var(--mono); color: #7d808b; }
+  .term pre { margin: 0; padding: 14px 14px 18px; font: 12.5px/1.75 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .term .ps { color: #7d808b; }
+  .caret { display: inline-block; width: 7px; height: 15px; vertical-align: -3px; background: #d7d8dc; animation: blink 1.1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .term-note { padding: 10px 14px; border-top: 1px solid rgba(255,255,255,.06); font-size: 11.5px; color: #7d808b; }
+  .crow { grid-template-columns: 8px 130px minmax(0, 1fr) 150px 30px; min-height: 44px; }
+  .crow .mod { width: 6px; height: 6px; border-radius: 50%; background: transparent; }
+  .crow.modified .mod { background: var(--accent); }
+  .crow .key { font-weight: 500; }
+  .crow .key small { display: block; font-weight: 400; color: var(--fg-3); font-size: 11.5px; }
+  .crow .field { height: 28px; font-size: 12px; }
+  .crow .sample { font: 12.5px var(--mono); text-align: right; white-space: pre; overflow: hidden; text-overflow: ellipsis; }
+  .row.focus-row { background: var(--hover); }
+  .savebar {
+    display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--line); background: var(--surface-2);
+    font-size: 12px; color: var(--fg-3);
+    position: sticky; bottom: 0; z-index: 3;
+  }
+  .savebar .grow { flex: 1; }
+
+  /* ---------- floating ---------- */
+  .selbar {
+    position: fixed; left: 50%; bottom: 22px; translate: -50% 0; z-index: 20;
+    display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 14px; border-radius: 10px;
+    background: var(--surface); box-shadow: var(--shadow-lg); animation: rise .16s ease-out;
+  }
+  .selbar .n { font-weight: 500; margin-right: 8px; }
+  .selbar .sep { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
+  .toasts { position: fixed; right: 20px; bottom: 20px; z-index: 40; display: grid; gap: 8px; justify-items: end; }
+  .toast {
+    display: flex; align-items: center; gap: 12px; min-width: 280px; max-width: 420px; padding: 10px 10px 10px 14px;
+    border-radius: 9px; background: var(--toast-bg); color: var(--toast-fg); box-shadow: var(--shadow-lg);
+    font-size: 12.5px; animation: rise .18s ease-out;
+  }
+  .toast .t { flex: 1; min-width: 0; }
+  .toast .t small { display: block; opacity: .6; font-family: var(--mono); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .toast .ic { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--ok); color: #fff; }
+  .toast.error .ic { background: var(--danger); }
+  .toast button { border: 0; background: transparent; color: inherit; font-weight: 600; padding: 4px 8px; border-radius: 5px; }
+  .toast button:hover { background: color-mix(in srgb, currentColor 12%, transparent); }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+
+  dialog {
+    width: min(440px, calc(100vw - 32px)); padding: 0; border: 0; border-radius: 12px;
+    background: var(--surface); color: var(--fg); box-shadow: var(--shadow-lg);
+  }
+  dialog::backdrop { background: var(--overlay); backdrop-filter: blur(2px); }
+  dialog[open] { animation: pop .16s ease-out; }
+  @keyframes pop { from { opacity: 0; transform: scale(.97); } }
+  .dlg-body { padding: 18px 18px 6px; }
+  .dlg-body h3 { margin: 0 0 6px; font-size: 14.5px; font-weight: 600; }
+  .dlg-body p { margin: 0 0 10px; color: var(--fg-2); }
+  .dlg-body code { font: 12px var(--mono); padding: 1px 5px; border-radius: 4px; background: var(--active); }
+  .dlg-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 18px 16px; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 860px) {
+    /* stacked: compact preview on top, the style list scrolls below it */
+    .colors { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 14px; }
+    .term { order: -1; max-height: 34vh; }
+    .term-note { display: none; }
+  }
+  @media (max-width: 760px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+    .side {
+      position: static; z-index: 10; height: auto; flex-direction: row; align-items: center;
+      padding: 8px 12px; border-right: 0; border-bottom: 1px solid var(--line); overflow-x: auto;
+    }
+    .brand { padding: 0 8px 0 0; }
+    .brand span, .nav-label, .side-foot { display: none; }
+    .nav { display: flex; gap: 2px; }
+    .nav a { height: 30px; padding: 0 9px; }
+    main { padding: 14px 16px 16px; }
+    body.has-sel main { padding-bottom: 72px; }
+    .head { flex-wrap: wrap; margin-bottom: 12px; }
+    .head p { font-size: 12px; }
+    .card { padding: 12px; margin-bottom: 12px; }
+    .toolbar { flex-wrap: wrap; }
+    .search { flex-basis: 100%; max-width: none; }
+    .cols-hist { grid-template-columns: 16px minmax(0, 1fr) 36px 56px; gap: 8px; }
+    .cols-hist .c-runs .bar, .cols-hist .when, .cols-hist .when-h { display: none; }
+    .row .actions { opacity: 1; }
+    .brand b { display: none; }
+    .cols-block { grid-template-columns: 16px minmax(0, 1fr) 60px; }
+    .cols-block .c-count { display: none; }
+    .cols-bak { grid-template-columns: 16px minmax(0, 1fr) 84px; }
+    .cols-bak .c-id { display: none; }
+    .crow { grid-template-columns: 8px minmax(0, 1fr) 30px; }
+    .crow .c-field { grid-column: 2 / 3; padding-bottom: 8px; }
+    .crow .sample { display: none; }
+    .editor { padding-left: 16px; }
+    .editor .btns { flex-wrap: wrap; }
+    .editor .btns .hint { display: none; }
+    .kbd-only { display: none; }
+  }
+  /* too short to pin anything usefully (landscape phone): fall back to normal page scroll */
+  @media (max-height: 480px) {
+    .app { height: auto; min-height: 100vh; overflow: visible; }
+    main { display: block; }
+    .page { display: block; }
+    .page > .list, .colors > .list, .term { max-height: none; overflow: hidden; }
+    .colors { display: grid; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m5.7 5.7 12.6 12.6"/></symbol>
+  <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8"/><path d="M10 12h4"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.9-.3-.9.3-1.9 1.3-1.9H17a4 4 0 0 0 4-4c0-5.5-4-10.2-9-10.2Z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7.5" r="1"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">›_</div>
+      <div><b>zss</b><span>history manager</span></div>
+    </div>
+    <div class="nav-label">Manage</div>
+    <nav class="nav" aria-label="Views">
+      <a href="#history" data-view="history"><svg class="i"><use href="#i-history"/></svg>History<span class="count" data-count="history"></span></a>
+      <a href="#blocked" data-view="blocked"><svg class="i"><use href="#i-ban"/></svg>Blocked<span class="count" data-count="blocked"></span></a>
+      <a href="#backups" data-view="backups"><svg class="i"><use href="#i-archive"/></svg>Backups<span class="count" data-count="backups"></span></a>
+      <a href="#colors" data-view="colors"><svg class="i"><use href="#i-palette"/></svg>Colors</a>
+    </nav>
+    <div class="side-foot">
+      <div class="keys">
+        <kbd>/</kbd><span>Search</span>
+        <kbd>j</kbd><span>Next · <kbd>k</kbd> previous</span>
+        <kbd>e</kbd><span>Edit row</span>
+        <kbd>x</kbd><span>Select row</span>
+        <kbd>1</kbd><span>… <kbd>4</kbd> switch view</span>
+      </div>
+      <div class="status" id="host"></div>
+    </div>
+  </aside>
+
+  <main><div class="page" id="view"></div></main>
+</div>
+
+<div class="selbar" id="selbar" hidden>
+  <span class="n" id="sel-n"></span>
+  <button class="btn danger" id="sel-delete"><svg class="i"><use href="#i-trash"/></svg>Delete</button>
+  <span class="sep"></span>
+  <button class="icon-btn" id="sel-clear" aria-label="Clear selection" title="Clear selection (Esc)"><svg class="i"><use href="#i-x"/></svg></button>
+</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<dialog id="dlg">
+  <form method="dialog">
+    <div class="dlg-body"><h3 id="dlg-title"></h3><div id="dlg-text"></div></div>
+    <div class="dlg-foot">
+      <button class="btn" value="cancel">Cancel</button>
+      <button class="btn danger" value="ok" id="dlg-ok"></button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+"use strict";
+
+/* Client-side mirror of zss/colors.py's validate(), used only to flag a bad
+   value while typing; the server re-validates on save. */
+const COLOR_NAMES = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white", "default"];
+const COLOR_ITEM = `(?:${COLOR_NAMES.join("|")}|[0-9]{1,3}|#[0-9a-fA-F]{6})`;
+const COLOR_RE = new RegExp(`^(?:fg=${COLOR_ITEM}|bg=${COLOR_ITEM}|bold|underline|standout)$`);
+function validStyle(s) {
+  s = String(s).trim();
+  if (s === "none") return true;
+  if (!s) return false;
+  return s.split(",").every((p) => {
+    p = p.trim();
+    const n = /^(?:fg|bg)=([0-9]{1,3})$/.exec(p);
+    return COLOR_RE.test(p) && (!n || +n[1] <= 255);
+  });
+}
+
+/* The per-run token arrives in the page URL (?t=...) and is sent back on
+   every API call; zss/web.py rejects anything without it. */
+const TOKEN = new URLSearchParams(location.search).get("t") || "";
+
+async function api(method, url, body) {
+  const headers = { "X-ZSS-Token": TOKEN };
+  const opts = { method, headers };
+  if (body !== undefined) { headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(body); }
+  let res;
+  try { res = await fetch(url, opts); }
+  catch (e) { throw new Error("zss web server is not reachable"); }
+  let data = null;
+  try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
+  if (!res.ok) throw new Error((data && data.error) || `HTTP ${res.status}`);
+  return data;
+}
+const qs = (o) => new URLSearchParams(o).toString();
+
+/* =========================================================================
+   Helpers
+   ========================================================================= */
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const icon = (id) => `<svg class="i"><use href="#i-${id}"/></svg>`;
+const plural = (n, w) => `${n.toLocaleString()} ${w}${n === 1 ? "" : "s"}`;
+const entries = (n) => `${n.toLocaleString()} ${n === 1 ? "entry" : "entries"}`;
+
+function ago(sec) {
+  if (sec == null) return "—";
+  const d = Math.max(0, Date.now() / 1000 - sec);
+  if (d < 60) return "just now";
+  if (d < 3600) return `${Math.floor(d / 60)}m ago`;
+  if (d < 86400) return `${Math.floor(d / 3600)}h ago`;
+  if (d < 86400 * 30) return `${Math.floor(d / 86400)}d ago`;
+  return new Date(sec * 1000).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+
+/* zsh-syntax-highlighting style ("fg=green,bold") -> inline CSS */
+function ansi(c) {
+  if (c.startsWith("#")) return c;
+  if (COLOR_NAMES.includes(c)) return `var(--ansi-${c})`;
+  const n = +c;
+  const base = ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"];
+  if (n < 8) return `var(--ansi-${base[n]})`;
+  if (n === 8) return "var(--ansi-8)";
+  if (n < 16) return `var(--ansi-${base[n - 8]})`;
+  if (n < 232) { const v = [0, 95, 135, 175, 215, 255], x = n - 16; return `rgb(${v[Math.floor(x / 36)]},${v[Math.floor(x / 6) % 6]},${v[x % 6]})`; }
+  const g = 8 + (n - 232) * 10; return `rgb(${g},${g},${g})`;
+}
+function css(style) {
+  if (!style) return "";
+  const out = [];
+  for (const part of style.split(",").map((s) => s.trim())) {
+    if (part.startsWith("fg=")) out.push(`color:${ansi(part.slice(3))}`);
+    else if (part.startsWith("bg=")) out.push(`background:${ansi(part.slice(3))}`);
+    else if (part === "bold") out.push("font-weight:700");
+    else if (part === "underline") out.push("text-decoration:underline;text-underline-offset:2px");
+    else if (part === "standout") out.push("filter:invert(1)");
+  }
+  return out.join(";");
+}
+
+/* Small zsh tokenizer: good enough to colour a history line the way the
+   plugin would, so the Colors view and the lists speak the same language. */
+const BUILTINS = new Set(["cd", "echo", "export", "source", "alias", "set", "unset", "exit", "pwd", "print", "read", "eval", "exec", "type", "which"]);
+const RESERVED = new Set(["for", "in", "do", "done", "if", "then", "else", "elif", "fi", "while", "until", "case", "esac", "function", "time", "select"]);
+const ALIASES = new Set(["ll", "la", "gs", "gp", "k"]);
+function tokens(src) {
+  const re = /(\s+)|(#.*$)|('(?:[^']*)'?|"(?:\\.|[^"\\])*"?)|(\d?>>?&?\d?|<<?|&>)|(&&|\|\||[|;&])|(\$\{[^}]*\}?|\$[A-Za-z_][A-Za-z0-9_]*|\$[?$#@*0-9])|([^\s'"|;&<>$]+)/gm;
+  const out = []; let m, cmdPos = true;
+  while ((m = re.exec(src))) {
+    const t = m[0];
+    if (m[1]) { out.push([t, null]); if (t.includes("\n")) cmdPos = true; continue; }
+    if (m[2]) { out.push([t, "comment"]); continue; }
+    if (m[3]) { out.push([t, "string"]); cmdPos = false; continue; }
+    if (m[4]) { out.push([t, "redirect"]); continue; }
+    if (m[5]) { out.push([t, "operator"]); cmdPos = true; continue; }
+    if (m[6]) { out.push([t, "variable"]); cmdPos = false; continue; }
+    let kind = null;
+    if (cmdPos && /^[A-Za-z_][A-Za-z0-9_]*=/.test(t)) { kind = "assignment"; }
+    else if (cmdPos) {
+      kind = RESERVED.has(t) ? "reserved" : BUILTINS.has(t) ? "builtin" : ALIASES.has(t) ? "alias" : "command";
+      cmdPos = RESERVED.has(t);
+    } else if (/^--?[A-Za-z]/.test(t)) kind = "option";
+    else if (/[*?]/.test(t)) kind = "glob";
+    else if (/^(~|\.{1,2}\/|\/)|\//.test(t) && !/^https?:/.test(t)) kind = "path";
+    out.push([t, kind]);
+  }
+  return out;
+}
+function hl(src, styles, needle) {
+  if (!needle) return tokens(src).map(([t, k]) => k ? `<span style="${css(styles[k])}">${esc(t)}</span>` : esc(t)).join("");
+  // with a search term, highlight the match and keep the syntax colours around it
+  let html = "", pos = 0;
+  const hits = []; let i = src.indexOf(needle);
+  while (i >= 0) { hits.push([i, i + needle.length]); i = src.indexOf(needle, i + needle.length); }
+  for (const [t, k] of tokens(src)) {
+    let seg = "";
+    for (let j = 0; j < t.length; j++) {
+      const at = pos + j, inHit = hits.some(([a, b]) => at >= a && at < b), start = hits.some(([a]) => a === at), end = hits.some(([, b]) => b === at + 1);
+      if (start || (j === 0 && inHit)) seg += "<mark>";
+      seg += esc(t[j]);
+      if (end || (j === t.length - 1 && inHit)) seg += "</mark>";
+    }
+    pos += t.length;
+    html += k ? `<span style="${css(styles[k])}">${seg}</span>` : seg;
+  }
+  return html;
+}
+function oneLine(text) {
+  const lines = text.split("\n");
+  return { first: lines[0], extra: lines.length - 1 };
+}
+
+/* =========================================================================
+   State
+   ========================================================================= */
+const S = {
+  view: "history",
+  styles: {},
+  hist: { q: "", sort: "recent", items: [], total: 0, loading: true, selected: new Set(), editing: null, cursor: -1 },
+  blocked: { items: [], counts: {}, loading: true, editing: null, cursor: -1, add: "" },
+  backups: { items: [], loading: true },
+  colors: { current: null, defaults: {}, draft: {} },
+};
+const PAGE = 100;
+
+/* =========================================================================
+   Toasts and confirm
+   ========================================================================= */
+function toast(msg, { sub, action, onAction, error } = {}) {
+  const el = document.createElement("div");
+  el.className = "toast" + (error ? " error" : "");
+  el.setAttribute("role", error ? "alert" : "status");
+  el.innerHTML = `<span class="ic">${icon(error ? "x" : "check")}</span><div class="t">${esc(msg)}${sub ? `<small>${esc(sub)}</small>` : ""}</div>` +
+    (action ? `<button data-a>${esc(action)}</button>` : "") + `<button data-x aria-label="Dismiss">${icon("x")}</button>`;
+  const kill = () => el.remove();
+  el.querySelector("[data-x]").onclick = kill;
+  if (action) el.querySelector("[data-a]").onclick = () => { kill(); onAction(); };
+  $("#toasts").append(el);
+  setTimeout(kill, action ? 8000 : 4000);
+}
+/* Undo puts the block-list rule back first (when the action changed one),
+   then restores the history backup taken before the purge. */
+function undoToast(msg, backupId, undoRule) {
+  toast(msg, {
+    sub: backupId ? `backup ${backupId}` : undefined,
+    action: backupId || undoRule ? "Undo" : undefined,
+    onAction: async () => {
+      try {
+        if (undoRule) await undoRule();
+        if (backupId) await api("POST", "/api/backups/restore", { id: backupId });
+        invalidatePreview();
+        toast(backupId ? "Restored previous history" : "Undone");
+        refreshAll();
+      } catch (e) { toast("Undo failed", { sub: e.message, error: true }); refreshAll(); }
+    },
+  });
+}
+const unblockRule = (t) => () => api("DELETE", "/api/blocklist?" + qs({ text: t }));
+function confirmDlg({ title, html, ok }) {
+  const d = $("#dlg");
+  $("#dlg-title").textContent = title;
+  $("#dlg-text").innerHTML = html;
+  $("#dlg-ok").textContent = ok;
+  d.returnValue = "";
+  d.showModal();
+  $("#dlg-ok").focus();
+  return new Promise((res) => d.addEventListener("close", () => res(d.returnValue === "ok"), { once: true }));
+}
+
+/* =========================================================================
+   Data loading
+   ========================================================================= */
+/* only the newest request may write the list, so a slow earlier search or
+   "Show more" can't overwrite a newer result */
+let histToken = 0;
+async function loadHistory({ append = false } = {}) {
+  const h = S.hist, my = ++histToken;
+  if (!append) h.loading = true, render();
+  try {
+    const r = await api("GET", "/api/commands?" + qs({ q: h.q, sort: h.sort, offset: append ? h.items.length : 0, limit: PAGE }));
+    if (my !== histToken) return;
+    h.items = append ? h.items.concat(r.commands) : r.commands;
+    h.total = r.total;
+  } catch (e) {
+    if (my !== histToken) return;
+    toast("Couldn't load history", { sub: e.message, error: true });
+  }
+  h.cursor = Math.min(h.cursor, h.items.length - 1);
+  h.loading = false;
+  counts(); render();
+}
+async function loadBlocked() {
+  const b = S.blocked;
+  try {
+    const r = await api("GET", "/api/blocklist");
+    b.items = r.blocklist;
+    const cs = await Promise.all(b.items.map((t) => api("GET", "/api/blocklist/preview?" + qs({ text: t })).then((x) => x.count).catch(() => null)));
+    b.counts = Object.fromEntries(b.items.map((t, i) => [t, cs[i]]));
+  } catch (e) { toast("Couldn't load block list", { sub: e.message, error: true }); }
+  b.cursor = Math.min(b.cursor, b.items.length - 1);
+  b.loading = false;
+  counts(); render();
+}
+async function loadBackups() {
+  try { S.backups.items = (await api("GET", "/api/backups")).backups; }
+  catch (e) { toast("Couldn't load backups", { sub: e.message, error: true }); }
+  S.backups.loading = false;
+  counts(); render();
+}
+async function loadColors() {
+  try { const r = await api("GET", "/api/colors"); S.colors.current = r.current; S.colors.defaults = r.defaults; S.styles = r.current; }
+  catch (e) { toast("Couldn't load colours", { sub: e.message, error: true }); }
+  render();
+}
+function refreshAll() { loadHistory(); loadBlocked(); loadBackups(); }
+function counts() {
+  const set = (k, v) => { const el = $(`[data-count="${k}"]`); if (el) el.textContent = v ?? ""; };
+  set("history", S.hist.loading && !S.hist.items.length ? "" : (S.hist.q ? "" : S.hist.total));
+  set("blocked", S.blocked.items.length || "");
+  set("backups", S.backups.items.length || "");
+}
+
+/* preview count for a prefix, with a tiny cache and stale-result guard */
+const previewCache = new Map();
+async function previewCount(text) {
+  if (!text) return 0;
+  if (previewCache.has(text)) return previewCache.get(text);
+  const { count } = await api("GET", "/api/blocklist/preview?" + qs({ text }));
+  previewCache.set(text, count);
+  return count;
+}
+function invalidatePreview() { previewCache.clear(); }
+
+/* =========================================================================
+   Rendering
+   ========================================================================= */
+function render() {
+  document.title = `zss · ${S.view[0].toUpperCase() + S.view.slice(1)}`;
+  $$(".nav a").forEach((a) => { if (a.dataset.view === S.view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+  const active = document.activeElement;
+  const keepFocus = active && active.dataset && active.dataset.keep;
+  const caret = keepFocus ? [active.selectionStart, active.selectionEnd] : null;
+  // keep an open editor's typed value across re-renders
+  const ed = $("#ed"), edState = ed ? [ed.dataset.orig, ed.value] : null;
+  // re-rendering replaces the list, so carry its scroll position over within the same view
+  const scroller = $("#view .list"), scroll = scroller && render.view === S.view ? scroller.scrollTop : 0;
+  render.view = S.view;
+  ({ history: renderHistory, blocked: renderBlocked, backups: renderBackups, colors: renderColors })[S.view]();
+  const ed2 = $("#ed");
+  if (edState && ed2 && ed2.dataset.orig === edState[0] && ed2.value !== edState[1]) { ed2.value = edState[1]; ed2.dispatchEvent(new Event("input")); }
+  const scroller2 = $("#view .list"); if (scroller2) scroller2.scrollTop = scroll;
+  if (keepFocus) { const el = $(`[data-keep="${keepFocus}"]`); if (el) { el.focus(); if (caret && el.setSelectionRange) el.setSelectionRange(...caret); } }
+  renderSelbar();
+}
+
+function skeleton(cols, n = 8) {
+  return Array.from({ length: n }, (_, i) =>
+    `<div class="row ${cols}"><span></span><div class="skel" style="width:${35 + ((i * 37) % 45)}%"></div><div class="skel" style="width:60%;justify-self:end"></div><div class="skel" style="width:70%;justify-self:end"></div></div>`).join("");
+}
+function empty(glyph, title, text) {
+  return `<div class="empty"><div class="glyph">${icon(glyph)}</div><b>${esc(title)}</b>${esc(text)}</div>`;
+}
+
+/* ---------- History ---------- */
+function renderHistory() {
+  const h = S.hist;
+  const max = Math.max(1, ...h.items.map((c) => c.count));
+  const allSel = h.items.length > 0 && h.items.every((c) => h.selected.has(c.text));
+  const someSel = !allSel && h.items.some((c) => h.selected.has(c.text));
+  let rows;
+  if (h.loading && !h.items.length) rows = skeleton("cols-hist");
+  else if (!h.items.length) rows = h.q ? empty("search", "No matches", `Nothing in your history contains “${h.q}”.`) : empty("history", "History is empty", "Commands you run in zsh will show up here.");
+  else rows = h.items.map((c, i) => h.editing === c.text ? histEditor(c) : histRow(c, i, max)).join("");
+
+  $("#view").innerHTML = `
+    <div class="head">
+      <div class="grow"><h1>History</h1><p>Every distinct command in your zsh history. Edit a row to block a prefix or remove matching entries.</p></div>
+    </div>
+    <div class="toolbar">
+      <label class="search">${icon("search")}
+        <input class="field" id="q" data-keep="q" type="search" placeholder="Search commands" value="${esc(h.q)}" aria-label="Search commands" autocomplete="off" spellcheck="false">
+        <kbd class="kbd-only">/</kbd>
+      </label>
+      <div class="seg" role="group" aria-label="Sort">
+        <button data-sort="recent" aria-pressed="${h.sort === "recent"}">Recent</button>
+        <button data-sort="count" aria-pressed="${h.sort === "count"}">Most used</button>
+      </div>
+      <span class="meta">${h.loading && !h.items.length ? "" : `<b>${h.total.toLocaleString()}</b> ${h.total === 1 ? "command" : "commands"}`}</span>
+    </div>
+    <div class="list" role="list">
+      <div class="lh cols-hist">
+        <input type="checkbox" class="check" id="sel-all" aria-label="Select all shown" ${allSel ? "checked" : ""} ${h.items.length ? "" : "disabled"}>
+        <span>Command</span><span class="r">Runs</span><span class="r when-h">Last used</span><span></span>
+      </div>
+      ${rows}
+      ${h.items.length < h.total ? `<div class="more"><button class="btn ghost" id="more">Show ${Math.min(PAGE, h.total - h.items.length)} more</button></div>` : ""}
+    </div>`;
+  const sa = $("#sel-all"); if (sa) sa.indeterminate = someSel;
+  if (h.editing) setupEditor("hist");
+}
+function histRow(c, i, max) {
+  const h = S.hist, sel = h.selected.has(c.text), { first, extra } = oneLine(c.text);
+  const w = Math.max(6, Math.round((Math.log(c.count + 1) / Math.log(max + 1)) * 100));
+  return `<div class="row cols-hist${sel ? " selected" : ""}${h.cursor === i ? " cursor" : ""}" role="listitem" data-i="${i}">
+    <input type="checkbox" class="check" data-sel="${i}" aria-label="Select command" ${sel ? "checked" : ""}>
+    <div class="cmd" title="${esc(c.text)}"><code>${hl(first, S.styles, h.q)}</code>${extra ? `<span class="chip">+${extra} ${extra === 1 ? "line" : "lines"}</span>` : ""}</div>
+    <div class="runs c-runs"><span class="bar"><i style="width:${w}%"></i></span><span>${c.count}</span></div>
+    <div class="when">${ago(c.last_ts)}</div>
+    <div class="actions c-act">
+      <button class="icon-btn" data-edit="${i}" aria-label="Edit / block" title="Edit, then block or delete (e)">${icon("pencil")}</button>
+      <button class="icon-btn warn" data-del="${i}" aria-label="Delete command" title="Delete every run of this exact command">${icon("trash")}</button>
+    </div>
+  </div>`;
+}
+function histEditor(c) {
+  return `<div class="row cols-hist" role="listitem" style="padding:0;border-bottom:0">
+    <div class="editor">
+      <div class="label">${icon("pencil")}<b>Edit command</b><span>— trim it down to the prefix you want to act on</span></div>
+      <input class="field" id="ed" data-keep="ed" value="${esc(c.text)}" data-orig="${esc(c.text)}" aria-label="Command prefix" spellcheck="false" autocomplete="off">
+      <div class="trim" id="ed-trim"></div>
+      <div class="impact" id="ed-impact">${icon("info")}<span>Counting matches…</span></div>
+      <div class="btns">
+        <button class="btn danger" id="ed-block" disabled>${icon("ban")}Block prefix<span class="n" id="ed-n"></span></button>
+        <button class="btn" id="ed-delete" disabled>${icon("trash")}Delete matching only</button>
+        <button class="btn ghost" id="ed-cancel">Cancel</button>
+        <span class="hint"><kbd>↵</kbd> block <kbd>esc</kbd> cancel</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Blocked ---------- */
+function renderBlocked() {
+  const b = S.blocked;
+  let rows;
+  if (b.loading) rows = skeleton("cols-block", 3);
+  else if (!b.items.length) rows = empty("ban", "Nothing blocked", "Blocked prefixes never get suggested and are purged from history.");
+  else rows = b.items.map((t, i) => b.editing === t ? blockEditor(t) : blockRow(t, i)).join("");
+  $("#view").innerHTML = `
+    <div class="head">
+      <div class="grow"><h1>Blocked</h1><p>Commands starting with one of these prefixes are removed from history and never suggested.</p></div>
+    </div>
+    <div class="card">
+      <h2>Block a prefix</h2>
+      <p>Paste a full command and trim it. Every existing history entry that starts with it is deleted (a backup is taken first).</p>
+      <form class="add-rule" id="add-form" autocomplete="off">
+        <input class="field" id="add" data-keep="add" value="${esc(b.add)}" placeholder="e.g.  mysql -u root -p" aria-label="Prefix to block" spellcheck="false">
+        <button class="btn danger" id="add-btn" disabled>${icon("plus")}Block<span class="n" id="add-n"></span></button>
+      </form>
+      <div class="impact" id="add-impact" hidden></div>
+    </div>
+    <div class="list" role="list">
+      <div class="lh cols-block"><span></span><span>Prefix</span><span class="r c-count">In history now</span><span></span></div>
+      ${rows}
+    </div>`;
+  if (b.editing !== null) setupEditor("block");
+  if (b.add) addPreview();
+}
+function blockRow(t, i) {
+  const n = S.blocked.counts[t];
+  const badge = n == null ? `<span class="chip">—</span>` : n ? `<span class="chip warn" title="Entries added since this rule was set">${n} to purge</span>` : `<span class="chip ok">${icon("check")}clean</span>`;
+  return `<div class="row cols-block${S.blocked.cursor === i ? " cursor" : ""}" role="listitem" data-i="${i}">
+    <span style="color:var(--fg-4)">${icon("ban")}</span>
+    <div class="cmd" title="${esc(t)}"><code>${hl(t, S.styles)}</code><span class="prefix-tail">…</span></div>
+    <div class="r c-count">${badge}</div>
+    <div class="actions">
+      <button class="icon-btn" data-bedit="${i}" aria-label="Edit prefix" title="Edit prefix (e)">${icon("pencil")}</button>
+      <button class="icon-btn warn" data-bdel="${i}" aria-label="Unblock" title="Unblock">${icon("x")}</button>
+    </div>
+  </div>`;
+}
+function blockEditor(t) {
+  return `<div class="row cols-block" role="listitem" style="padding:0;border-bottom:0">
+    <div class="editor">
+      <div class="label">${icon("pencil")}<b>Edit rule</b><span>— the old prefix is replaced by the new one</span></div>
+      <input class="field" id="ed" data-keep="ed" value="${esc(t)}" data-orig="${esc(t)}" aria-label="Blocked prefix" spellcheck="false" autocomplete="off">
+      <div class="impact" id="ed-impact">${icon("info")}<span>Counting matches…</span></div>
+      <div class="btns">
+        <button class="btn primary" id="ed-save" disabled>${icon("check")}Save<span class="n" id="ed-n"></span></button>
+        <button class="btn ghost" id="ed-cancel">Cancel</button>
+        <span class="hint"><kbd>↵</kbd> save <kbd>esc</kbd> cancel</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Backups ---------- */
+function parseBackup(id) {
+  const m = /^zsh_history\.(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})\.(\d+)$/.exec(id);
+  if (!m) return null;
+  return new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
+}
+function renderBackups() {
+  const b = S.backups;
+  const items = [...b.items].reverse();
+  let rows = "";
+  if (b.loading) rows = skeleton("cols-bak", 3);
+  else if (!items.length) rows = empty("archive", "No backups yet", "zss snapshots your history before every delete, block or restore.");
+  else {
+    let day = null;
+    items.forEach((id, i) => {
+      const d = parseBackup(id);
+      const label = d ? d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" }) : "Other";
+      if (label !== day) { rows += `<div class="group">${esc(label)}</div>`; day = label; }
+      rows += `<div class="row cols-bak" role="listitem">
+        <span class="dot${i === 0 ? " latest" : ""}"></span>
+        <div class="bak-when"><b>${d ? d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : esc(id)}</b><span>${d ? ago(d.getTime() / 1000) : ""}</span>${i === 0 ? ` <span class="chip accent" style="margin-left:8px">latest</span>` : ""}</div>
+        <code class="mono c-id" style="color:var(--fg-3);font-size:11.5px;text-align:right">${esc(id.replace("zsh_history.", ""))}</code>
+        <div class="r"><button class="btn" data-restore="${esc(id)}">${icon("undo")}Restore</button></div>
+      </div>`;
+    });
+  }
+  $("#view").innerHTML = `
+    <div class="head"><div class="grow"><h1>Backups</h1><p>Snapshots of <span class="mono">~/.zsh_history</span>. Restoring one backs up the current file first, so it can be undone.</p></div></div>
+    <div class="list" role="list">${rows}</div>`;
+}
+
+/* ---------- Colors ---------- */
+const COLOR_HELP = {
+  command: ["Command", "git"], alias: ["Alias", "ll"], builtin: ["Builtin", "cd"], function: ["Function", "mkcd"],
+  reserved: ["Reserved word", "for"], unknown: ["Unknown command", "gti"], option: ["Option", "--force"],
+  string: ["String", '"hello"'], variable: ["Variable", "$HOME"], path: ["Path", "~/.zshrc"], glob: ["Glob", "*.log"],
+  comment: ["Comment", "# note"], operator: ["Operator", "&&"], redirect: ["Redirect", ">"], assignment: ["Assignment", "FOO=1"],
+  suggestion: ["Suggestion", "ghost text"],
+};
+const help = (k) => COLOR_HELP[k] || [k, k];
+function renderColors() {
+  const c = S.colors;
+  if (!c.current) { $("#view").innerHTML = `<div class="head"><div class="grow"><h1>Colors</h1></div></div><div class="list">${skeleton("crow", 6)}</div>`; return; }
+  const eff = (k) => (k in c.draft ? c.draft[k] : c.current[k]);
+  const styles = Object.fromEntries(Object.keys(c.defaults).map((k) => [k, validStyle(eff(k)) ? eff(k) : c.current[k]]));
+  const dirty = Object.keys(c.draft).filter((k) => c.draft[k] !== c.current[k]);
+  const invalid = dirty.filter((k) => !validStyle(c.draft[k]));
+  const modified = Object.keys(c.defaults).filter((k) => c.current[k] !== c.defaults[k]);
+  const s = (k, t) => `<span style="${css(styles[k])}">${esc(t)}</span>`;
+  const rows = Object.keys(c.defaults).map((k) => {
+    const v = eff(k), bad = !validStyle(v);
+    return `<div class="row crow${c.current[k] !== c.defaults[k] || (k in c.draft && c.draft[k] !== c.defaults[k]) ? " modified" : ""}" role="listitem">
+      <span class="mod" title="Differs from default"></span>
+      <div class="key">${esc(help(k)[0])}<small class="mono">${k}</small></div>
+      <div class="c-field"><input class="field mono${bad ? " invalid" : ""}" data-color="${k}" data-keep="c-${k}" value="${esc(v)}" aria-label="${esc(help(k)[0])} style" aria-invalid="${bad}" spellcheck="false" autocomplete="off" title="${bad ? "Use fg=…, bg=…, bold, underline or standout" : `Default: ${c.defaults[k]}`}"></div>
+      <div class="sample">${s(k, help(k)[1])}</div>
+      <button class="icon-btn" data-creset="${k}" aria-label="Reset ${k} to default" title="Reset to ${esc(c.defaults[k])}" ${v === c.defaults[k] ? "disabled style='visibility:hidden'" : ""}>${icon("reset")}</button>
+    </div>`;
+  }).join("");
+  $("#view").innerHTML = `
+    <div class="head">
+      <div class="grow"><h1>Colors</h1><p>Syntax-highlighting styles, written to <span class="mono">colors.conf</span>. Values use zsh syntax: <span class="mono">fg=cyan,bold</span>.</p></div>
+      <button class="btn ghost" id="c-reset-all" ${modified.length ? "" : "disabled"}>${icon("reset")}Reset all</button>
+    </div>
+    <div class="colors">
+      <div class="list" role="list">
+        ${rows}
+        <div class="savebar">
+          <span class="grow">${invalid.length ? `<span style="color:var(--danger)">${invalid.length} invalid ${invalid.length === 1 ? "value" : "values"}</span>` : dirty.length ? `${plural(dirty.length, "unsaved change")}` : "All changes saved"}</span>
+          <button class="btn ghost" id="c-discard" ${dirty.length ? "" : "disabled"}>Discard</button>
+          <button class="btn primary" id="c-save" ${dirty.length && !invalid.length ? "" : "disabled"}>Save</button>
+        </div>
+      </div>
+      <div class="term" aria-label="Live preview">
+        <div class="term-bar"><i></i><i></i><i></i><span>zsh — preview</span></div>
+<pre><span class="ps">~/zss ❯ </span>${hl('FOO=1 git push --force origin main && echo "done" > ~/out.log', styles)}
+<span class="ps">~/zss ❯ </span>${s("reserved", "for")} f ${s("reserved", "in")} ${s("glob", "*.log")}; ${s("reserved", "do")} ${s("function", "mkcd")} ${s("variable", "$f")}; ${s("reserved", "done")}
+<span class="ps">~/zss ❯ </span>${s("alias", "ll")} ${s("option", "-la")} ${s("operator", "|")} ${s("command", "rg")} ${s("string", "'TODO'")}  ${s("comment", "# find notes")}
+<span class="ps">~/zss ❯ </span>${s("unknown", "gti")} ${s("builtin", "cd")} ${s("path", "~/Desktop")}
+<span class="ps">~/zss ❯ </span>${s("command", "git")} ch<span class="caret"></span>${s("suggestion", "eckout -b fix/lock-timeout")}</pre>
+        <div class="term-note">Preview updates as you type. Invalid values keep the last saved style.</div>
+      </div>
+    </div>`;
+}
+
+/* ---------- selection bar ---------- */
+function renderSelbar() {
+  const n = S.hist.selected.size, show = S.view === "history" && n > 0;
+  $("#selbar").hidden = !show;
+  document.body.classList.toggle("has-sel", show);
+  if (show) $("#sel-n").textContent = `${n} selected`;
+}
+
+/* =========================================================================
+   Inline editors
+   ========================================================================= */
+let edToken = 0;
+function setupEditor(kind) {
+  const input = $("#ed");
+  if (!input) return;
+  if (document.activeElement !== input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  const orig = input.dataset.orig;
+  const update = debounce(async () => {
+    if (!input.isConnected) return; // editor closed or re-rendered meanwhile
+    const my = ++edToken, v = input.value;
+    const imp = $("#ed-impact"), nEl = $("#ed-n");
+    if (kind === "hist") {
+      const trim = $("#ed-trim");
+      if (orig.startsWith(v) && v !== orig) trim.innerHTML = `<span class="keep">${esc(v)}</span><span class="cut">${esc(orig.slice(v.length))}</span>`;
+      else trim.innerHTML = "";
+    }
+    const btn = $(kind === "hist" ? "#ed-block" : "#ed-save"), del = $("#ed-delete");
+    if (!v) {
+      imp.className = "impact"; imp.innerHTML = `${icon("info")}<span>Type a prefix.</span>`; nEl.textContent = "";
+      btn.disabled = true; if (del) del.disabled = true; return;
+    }
+    if (kind === "block" && v === orig) {
+      imp.className = "impact"; imp.innerHTML = `${icon("info")}<span>Unchanged.</span>`; nEl.textContent = ""; btn.disabled = true; return;
+    }
+    if (kind === "block" && S.blocked.items.includes(v)) {
+      imp.className = "impact hot"; imp.innerHTML = `${icon("alert")}<span class="err">That prefix is already blocked.</span>`; btn.disabled = true; return;
+    }
+    let n;
+    try { n = await previewCount(v); } catch (e) { if (my !== edToken || !input.isConnected) return; imp.className = "impact hot"; imp.innerHTML = `${icon("alert")}<span class="err">${esc(e.message)}</span>`; return; }
+    if (my !== edToken || !input.isConnected) return;
+    btn.disabled = false; if (del) del.disabled = n === 0;
+    nEl.textContent = n ? `· ${n}` : "";
+    const q = `<code class="mono">${esc(v)}</code>`;
+    if (kind === "hist") {
+      imp.className = "impact" + (n ? " hot" : "");
+      imp.innerHTML = n
+        ? `${icon("alert")}<span>Blocking ${q}… deletes <strong>${entries(n)}</strong> now and hides it from future suggestions.</span>`
+        : `${icon("info")}<span>No history entries start with ${q}. Blocking only stops future ones.</span>`;
+    } else {
+      imp.className = "impact" + (n ? " hot" : "");
+      imp.innerHTML = (n
+        ? `${icon("alert")}<span>The new prefix matches <strong>${entries(n)}</strong>; they are deleted when you save.`
+        : `${icon("info")}<span>The new prefix matches nothing in history right now.`) +
+        ` Unblocking <code class="mono">${esc(orig)}</code> does not bring back entries it already removed.</span>`;
+    }
+  }, 140);
+  // nothing can be confirmed until the count for exactly this text is shown
+  const lock = () => { ++edToken; $(kind === "hist" ? "#ed-block" : "#ed-save").disabled = true; const del = $("#ed-delete"); if (del) del.disabled = true; };
+  input.addEventListener("input", () => { lock(); update(); });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeEditor(); }
+    if (e.key === "Enter") { e.preventDefault(); const b = $(kind === "hist" ? "#ed-block" : "#ed-save"); if (!b.disabled) b.click(); }
+  });
+  update();
+}
+function closeEditor() {
+  const v = S.view;
+  if (v === "history") S.hist.editing = null; else S.blocked.editing = null;
+  render();
+  const row = $(".row.cursor"); if (row) row.scrollIntoView({ block: "nearest" });
+}
+async function busy(btn, fn) {
+  btn.classList.add("busy");
+  try { await fn(); } finally { btn.classList.remove("busy"); }
+}
+
+/* History: block prefix / delete matching */
+async function histBlock(btn) {
+  const v = $("#ed").value;
+  if (!v) return;
+  await busy(btn, async () => {
+    try {
+      const r = await api("POST", "/api/blocklist", { text: v });
+      invalidatePreview();
+      S.hist.editing = null;
+      undoToast(r.added ? `Blocked “${v}” · removed ${entries(r.removed)}` : `Already blocked · removed ${entries(r.removed)}`, r.backup_id, r.added ? unblockRule(v) : undefined);
+      refreshAll();
+    } catch (e) { toast("Couldn't block", { sub: e.message, error: true }); }
+  });
+}
+async function histDeleteMatching(btn) {
+  const v = $("#ed").value;
+  await busy(btn, async () => {
+    try {
+      const r = await api("POST", "/api/delete", { commands: [v], match: "prefix" });
+      invalidatePreview(); S.hist.editing = null;
+      undoToast(`Deleted ${entries(r.removed)} starting with “${v}”`, r.backup_id);
+      loadHistory(); loadBackups(); loadBlocked();
+    } catch (e) { toast("Couldn't delete", { sub: e.message, error: true }); }
+  });
+}
+async function deleteExact(texts) {
+  try {
+    const r = await api("POST", "/api/delete", { commands: texts, match: "exact" });
+    invalidatePreview();
+    texts.forEach((t) => S.hist.selected.delete(t));
+    undoToast(`Deleted ${entries(r.removed)}`, r.backup_id);
+    loadHistory(); loadBackups(); loadBlocked();
+  } catch (e) { toast("Couldn't delete", { sub: e.message, error: true }); }
+}
+
+/* Blocked: edit the rule in place, so it keeps its position in the list */
+async function blockSave(btn) {
+  const orig = $("#ed").dataset.orig, v = $("#ed").value;
+  if (!v || v === orig) return;
+  await busy(btn, async () => {
+    try {
+      const r = await api("POST", "/api/blocklist/edit", { old: orig, new: v });
+      invalidatePreview(); S.blocked.editing = null;
+      undoToast(`Rule updated · removed ${entries(r.removed)}`, r.backup_id,
+        () => api("POST", "/api/blocklist/edit", { old: v, new: orig }));
+      refreshAll();
+    } catch (e) { toast("Couldn't save rule", { sub: e.message, error: true }); }
+  });
+}
+async function blockAdd() {
+  const v = $("#add").value;
+  if (!v) return;
+  const btn = $("#add-btn");
+  await busy(btn, async () => {
+    try {
+      const r = await api("POST", "/api/blocklist", { text: v });
+      invalidatePreview();
+      S.blocked.add = "";
+      undoToast(r.added ? `Blocked “${v}” · removed ${entries(r.removed)}` : `“${v}” was already blocked`, r.backup_id, r.added ? unblockRule(v) : undefined);
+      refreshAll();
+    } catch (e) { toast("Couldn't block", { sub: e.message, error: true }); }
+  });
+}
+async function unblock(t) {
+  const pos = S.blocked.items.indexOf(t);
+  try {
+    await api("DELETE", "/api/blocklist?" + qs({ text: t }));
+    toast(`Unblocked “${t}”`, { action: "Undo", onAction: () => reblock(t, pos) });
+    loadBlocked();
+  } catch (e) { toast("Couldn't unblock", { sub: e.message, error: true }); }
+}
+/* Undo of an unblock: put the rule back at its old position. Re-adding purges
+   matching history, so ask first when that would delete anything. */
+async function reblock(t, pos) {
+  try {
+    invalidatePreview();
+    const n = await previewCount(t);
+    if (n) {
+      const ok = await confirmDlg({
+        title: "Block this rule again?",
+        html: `<p><strong>${entries(n)}</strong> in history now start with <code class="mono">${esc(t)}</code>. Blocking again deletes them.</p><p>A backup is taken first, so you can undo.</p>`,
+        ok: `Block and delete ${n.toLocaleString()}`,
+      });
+      if (!ok) return;
+    }
+    const r = await api("POST", "/api/blocklist", { text: t, position: pos < 0 ? undefined : pos });
+    invalidatePreview();
+    undoToast(r.removed ? `Blocked “${t}” again · removed ${entries(r.removed)}` : `Blocked “${t}” again`, r.backup_id, r.added ? unblockRule(t) : undefined);
+    refreshAll();
+  } catch (e) { toast("Undo failed", { sub: e.message, error: true }); refreshAll(); }
+}
+
+/* =========================================================================
+   Events
+   ========================================================================= */
+const onSearch = debounce(() => loadHistory(), 160);
+document.addEventListener("input", (e) => {
+  const t = e.target;
+  if (t.id === "q") { S.hist.q = t.value; S.hist.cursor = -1; onSearch(); }
+  if (t.id === "add") { S.blocked.add = t.value; ++edToken; $("#add-btn").disabled = true; addPreview(); }
+  if (t.dataset.color) {
+    const k = t.dataset.color;
+    S.colors.draft[k] = t.value;
+    colorLive();
+  }
+});
+const colorLive = debounce(() => render(), 90);
+const addPreview = debounce(async () => {
+  if (!$("#add")) return;
+  const v = $("#add").value, imp = $("#add-impact"), btn = $("#add-btn"), nEl = $("#add-n");
+  const my = ++edToken;
+  if (!v) { imp.hidden = true; btn.disabled = true; nEl.textContent = ""; return; }
+  if (S.blocked.items.includes(v)) { imp.hidden = false; imp.className = "impact"; imp.innerHTML = `${icon("info")}<span>Already blocked. Blocking again purges entries added since.</span>`; }
+  let n; try { n = await previewCount(v); } catch (e) { return; }
+  if (my !== edToken || !$("#add")) return;
+  btn.disabled = false; nEl.textContent = n ? `· ${n}` : "";
+  imp.hidden = false; imp.className = "impact" + (n ? " hot" : "");
+  imp.innerHTML = n
+    ? `${icon("alert")}<span><strong>${entries(n)}</strong> start with <code class="mono">${esc(v)}</code> and will be deleted.</span>`
+    : `${icon("info")}<span>Nothing in history starts with <code class="mono">${esc(v)}</code> yet.</span>`;
+}, 140);
+
+document.addEventListener("click", async (e) => {
+  const t = e.target.closest("button, a, input[type=checkbox]");
+  if (!t) return;
+  const h = S.hist, d = t.dataset;
+  if (d.view) { e.preventDefault(); go(d.view); return; }
+  if (d.sort) { h.sort = d.sort; h.cursor = -1; loadHistory(); return; }
+  if (t.id === "more") { loadHistory({ append: true }); return; }
+  if (t.id === "sel-all") { if (t.checked) h.items.forEach((c) => h.selected.add(c.text)); else h.items.forEach((c) => h.selected.delete(c.text)); render(); return; }
+  if (d.sel !== undefined) { const c = h.items[+d.sel]; if (t.checked) h.selected.add(c.text); else h.selected.delete(c.text); h.cursor = +d.sel; render(); return; }
+  if (d.edit !== undefined) { h.editing = h.items[+d.edit].text; h.cursor = +d.edit; render(); return; }
+  if (d.del !== undefined) { deleteExact([h.items[+d.del].text]); return; }
+  if (t.id === "ed-block") { histBlock(t); return; }
+  if (t.id === "ed-delete") { histDeleteMatching(t); return; }
+  if (t.id === "ed-save") { blockSave(t); return; }
+  if (t.id === "ed-cancel") { closeEditor(); return; }
+  if (t.id === "sel-clear") { h.selected.clear(); render(); return; }
+  if (t.id === "sel-delete") {
+    const texts = [...h.selected];
+    const ok = await confirmDlg({ title: `Delete ${plural(texts.length, "command")}?`, html: `<p>Every run of the selected commands is removed from <code>~/.zsh_history</code>. A backup is taken first, so you can undo.</p>`, ok: "Delete" });
+    if (ok) deleteExact(texts);
+    return;
+  }
+  if (d.bedit !== undefined) { S.blocked.editing = S.blocked.items[+d.bedit]; S.blocked.cursor = +d.bedit; render(); return; }
+  if (d.bdel !== undefined) { unblock(S.blocked.items[+d.bdel]); return; }
+  if (d.restore) {
+    const id = d.restore, dt = parseBackup(id);
+    const ok = await confirmDlg({
+      title: "Restore this backup?",
+      html: `<p>Your history is replaced with the snapshot from <b>${dt ? esc(dt.toLocaleString()) : esc(id)}</b>.</p><p>The current file is backed up first, so this can be undone.</p>`,
+      ok: "Restore",
+    });
+    if (!ok) return;
+    await busy(t, async () => {
+      try {
+        const r = await api("POST", "/api/backups/restore", { id });
+        invalidatePreview();
+        undoToast("Backup restored", r.backup_of_previous);
+        refreshAll();
+      } catch (err) { toast("Couldn't restore", { sub: err.message, error: true }); }
+    });
+    return;
+  }
+  if (d.creset) { S.colors.draft[d.creset] = S.colors.defaults[d.creset]; render(); return; }
+  if (t.id === "c-discard") { S.colors.draft = {}; render(); return; }
+  if (t.id === "c-save") {
+    const c = S.colors, body = Object.fromEntries(Object.entries(c.draft).filter(([k, v]) => v !== c.current[k]));
+    await busy(t, async () => {
+      try { const r = await api("POST", "/api/colors", body); c.current = r.current; S.styles = r.current; c.draft = {}; toast("Colors saved", { sub: "Open shells pick them up at their next prompt" }); render(); }
+      catch (err) { toast("Couldn't save colors", { sub: err.message, error: true }); }
+    });
+    return;
+  }
+  if (t.id === "c-reset-all") {
+    const ok = await confirmDlg({ title: "Reset all colors?", html: `<p>Every style goes back to its default and <code>colors.conf</code> is cleared.</p>`, ok: "Reset all" });
+    if (!ok) return;
+    try { const r = await api("POST", "/api/colors/reset", {}); S.colors.current = r.current; S.styles = r.current; S.colors.draft = {}; toast("Colors reset to defaults"); render(); }
+    catch (err) { toast("Couldn't reset", { sub: err.message, error: true }); }
+  }
+});
+document.addEventListener("submit", (e) => { if (e.target.id === "add-form") { e.preventDefault(); if (!$("#add-btn").disabled) blockAdd(); } });
+
+/* keyboard: / search, 1-4 views, j/k move, x select, e edit, esc clear */
+document.addEventListener("keydown", (e) => {
+  const inField = e.target.matches("input:not([type=checkbox]), textarea");
+  if ($("#dlg").open) return;
+  if (e.key === "Escape") {
+    if (inField && e.target.id === "q" && S.hist.q) { S.hist.q = ""; loadHistory(); return; }
+    if (inField) { e.target.blur(); return; }
+    if (S.hist.selected.size) { S.hist.selected.clear(); render(); }
+    return;
+  }
+  if (inField || e.metaKey || e.ctrlKey || e.altKey) return;
+  const views = ["history", "blocked", "backups", "colors"];
+  if (/^[1-4]$/.test(e.key)) { go(views[+e.key - 1]); return; }
+  if (e.key === "/" && S.view === "history") { e.preventDefault(); $("#q").focus(); $("#q").select(); return; }
+  const list = S.view === "history" ? S.hist : S.view === "blocked" ? S.blocked : null;
+  if (!list) return;
+  const len = S.view === "history" ? S.hist.items.length : S.blocked.items.length;
+  if (e.key === "j" || e.key === "ArrowDown") { e.preventDefault(); list.cursor = Math.min(len - 1, list.cursor + 1); render(); $(".row.cursor")?.scrollIntoView({ block: "nearest" }); }
+  if (e.key === "k" || e.key === "ArrowUp") { e.preventDefault(); list.cursor = Math.max(0, list.cursor - 1); render(); $(".row.cursor")?.scrollIntoView({ block: "nearest" }); }
+  // Enter on a focused button/link/checkbox belongs to that control
+  if (e.key === "Enter" && e.target.closest("button, a, input, select, summary")) return;
+  const cur = S.view === "history" ? S.hist.items[list.cursor] : S.blocked.items[list.cursor];
+  if (cur === undefined) return;
+  if (e.key === "e" || e.key === "Enter") {
+    e.preventDefault();
+    if (S.view === "history") S.hist.editing = cur.text; else S.blocked.editing = cur;
+    render();
+  }
+  if (e.key === "x" && S.view === "history") {
+    S.hist.selected.has(cur.text) ? S.hist.selected.delete(cur.text) : S.hist.selected.add(cur.text);
+    render();
+  }
+});
+
+function go(view) {
+  if (!["history", "blocked", "backups", "colors"].includes(view)) view = "history";
+  S.view = view;
+  if (location.hash !== "#" + view) history.replaceState(null, "", "#" + view);
+  render();
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", () => go(location.hash.slice(1)));
+
+$("#host").textContent = location.host;
+go(location.hash.slice(1) || "history");
+loadColors().then(refreshAll);
+</script>
+</body>
+</html>
