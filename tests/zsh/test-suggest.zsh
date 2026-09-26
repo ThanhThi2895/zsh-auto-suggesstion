@@ -118,5 +118,34 @@ unsetopt GLOB_SUBST
 assert_eq "$POSTDISPLAY" "chars] (test) *glob*" "ghost text is exact under GLOB_SUBST"
 assert_eq "${(M)region_highlight:#*memo=zss}" "14 34 fg=8 memo=zss" "ghost highlight span is exact under GLOB_SUBST"
 
+# Accept-word must not depend on the user's options either. It used to strip
+# "$BUFFER" from the suggestion as a pattern: under GLOB_SUBST a buffer
+# ending in "[" was a "bad pattern" error, and "*" matched too little, so the
+# accepted "word" repeated part of the buffer ("echo *" -> "echo **.txt").
+# Under KSH_ARRAYS its [1] subscripts were zero-based and grabbed the wrong
+# word/span. (Glob characters in the expected values are compared via (q) so
+# assert_eq's pattern match can't pass a wrong result; `always` keeps an
+# old-style "bad pattern" error from aborting the rest of this file.)
+setopt GLOB_SUBST
+BUFFER="echo special ["; CURSOR=${#BUFFER}
+ZSS_SUGGESTION="echo special [chars] (test) *glob*"
+{ zss-accept-word 2>/dev/null } always { TRY_BLOCK_ERROR=0 }
+unsetopt GLOB_SUBST
+assert_eq "${(q)BUFFER}" "${(q):-echo special [chars]}" "accept-word with '[' in the buffer is exact under GLOB_SUBST"
+
+setopt GLOB_SUBST
+BUFFER="echo *"; CURSOR=${#BUFFER}
+ZSS_SUGGESTION="echo *.txt done"
+{ zss-accept-word 2>/dev/null } always { TRY_BLOCK_ERROR=0 }
+unsetopt GLOB_SUBST
+assert_eq "${(q)BUFFER}" "${(q):-echo *.txt}" "accept-word with '*' in the buffer is exact under GLOB_SUBST"
+
+setopt KSH_ARRAYS
+BUFFER="git c"; CURSOR=${#BUFFER}
+ZSS_SUGGESTION="git commit -m test"
+{ zss-accept-word 2>/dev/null } always { TRY_BLOCK_ERROR=0 }
+unsetopt KSH_ARRAYS
+assert_eq "$BUFFER" "git commit" "accept-word takes the next word under KSH_ARRAYS"
+
 rm -rf "$WORK"
 summary

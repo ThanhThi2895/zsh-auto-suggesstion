@@ -384,8 +384,12 @@ zss-accept-or-forward-char() {
 zle -N zss-accept-or-forward-char
 
 zss-accept-word() {
-  if [[ -n $ZSS_SUGGESTION ]]; then
-    local rest=${ZSS_SUGGESTION#$BUFFER}
+  # emulate + slice instead of ${ZSS_SUGGESTION#$BUFFER}: same reasons as
+  # _zss_render (GLOB_SUBST would make $BUFFER a pattern, KSH_ARRAYS would
+  # make the [1] subscripts below zero-based).
+  emulate -L zsh
+  if [[ -n $ZSS_SUGGESTION && ${ZSS_SUGGESTION[1,${#BUFFER}]} == "$BUFFER" ]]; then
+    local rest=${ZSS_SUGGESTION[${#BUFFER}+1,-1]}
     local -a words
     words=("${(z)rest}")
     if (( ${#words} > 0 )); then
