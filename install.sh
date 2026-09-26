@@ -20,7 +20,7 @@
 # `curl | bash` executes nothing.
 set -euo pipefail
 
-ZSS_REPO_URL="${ZSS_REPO_URL:-https://github.com/ThanhThi2895/zsh-auto-suggesstion.git}"
+ZSS_REPO_URL="${ZSS_REPO_URL:-https://github.com/ThanhThi2895/zsh-smart-suggest.git}"
 ZSS_BRANCH="${ZSS_BRANCH:-main}"
 ZSS_INSTALL_DIR="${ZSS_INSTALL_DIR:-$HOME/.zsh-smart-suggest}"
 

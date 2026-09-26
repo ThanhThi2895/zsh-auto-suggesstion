@@ -17,7 +17,7 @@ suggested from your shell history.
 One line, straight from GitHub (needs `git` and the macOS system `python3`):
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/ThanhThi2895/zsh-auto-suggesstion/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ThanhThi2895/zsh-smart-suggest/main/install.sh | bash
 ```
 
 This clones the repo into `~/.zsh-smart-suggest` (or `git pull`s it if it's
@@ -26,7 +26,7 @@ existing `~/.zsh-smart-suggest` that isn't a zsh-smart-suggest git clone. To clo
 else, set `ZSS_INSTALL_DIR` for bash:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/ThanhThi2895/zsh-auto-suggesstion/main/install.sh | ZSS_INSTALL_DIR=~/src/zss bash
+curl -fsSL https://raw.githubusercontent.com/ThanhThi2895/zsh-smart-suggest/main/install.sh | ZSS_INSTALL_DIR=~/src/zss bash
 ```
 
 Already have a checkout? Run `./install.sh` from its root instead — it
