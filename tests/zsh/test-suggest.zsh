@@ -86,5 +86,37 @@ else
   pass "buffer over ZSS_MAX_BUFFER is skipped"
 fi
 
+# --- regression: typing a character that breaks the match must clear the
+# ghost text. _zss_render used to return early on an empty suggestion
+# without touching POSTDISPLAY, so "git c" + ghost "ommit -m test" became
+# "git cl" + a stale, un-highlighted "ommit -m test" that read as typed text.
+# (Outside ZLE, BUFFER/CURSOR/POSTDISPLAY/region_highlight are plain
+# parameters, so the render path can be driven directly.)
+region_highlight=()
+BUFFER="git c"; CURSOR=${#BUFFER}
+_zss_suggest
+assert_eq "$POSTDISPLAY" "ommit -m test" "ghost text is the rest of the matched suggestion"
+assert_eq "${(M)region_highlight:#*memo=zss}" "5 18 fg=8 memo=zss" "ghost highlight covers exactly the ghost text"
+BUFFER="git cl"; CURSOR=${#BUFFER}
+_zss_suggest
+assert_eq "$POSTDISPLAY" "" "a non-matching keystroke clears the stale ghost text"
+assert_eq "$ZSS_SUGGESTION" "" "a non-matching keystroke clears the suggestion"
+assert_eq "${#${(M)region_highlight:#*memo=zss}}" "0" "a non-matching keystroke drops the ghost highlight"
+
+# A suggestion that no longer extends the buffer is never rendered as ghost text.
+BUFFER="git cl"; ZSS_SUGGESTION="git commit -m test"; POSTDISPLAY="ommit -m test"
+_zss_render
+assert_eq "$POSTDISPLAY" "" "a suggestion that doesn't extend the buffer is not rendered"
+
+# The ghost span must not depend on the user's options: under GLOB_SUBST,
+# stripping "$BUFFER" as a pattern made "echo special [" match nothing and
+# drew the whole suggestion (and a too-long highlight) after the buffer.
+setopt GLOB_SUBST
+BUFFER="echo special ["; CURSOR=${#BUFFER}
+_zss_suggest
+unsetopt GLOB_SUBST
+assert_eq "$POSTDISPLAY" "chars] (test) *glob*" "ghost text is exact under GLOB_SUBST"
+assert_eq "${(M)region_highlight:#*memo=zss}" "14 34 fg=8 memo=zss" "ghost highlight span is exact under GLOB_SUBST"
+
 rm -rf "$WORK"
 summary

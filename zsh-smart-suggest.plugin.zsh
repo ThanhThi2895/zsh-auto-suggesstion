@@ -254,9 +254,20 @@ _zss_clear_suggestion() {
 }
 
 _zss_render() {
+  # emulate: the widgets run with the user's options, where e.g. GLOB_SUBST
+  # would turn $BUFFER into a pattern or KSH_ARRAYS would shift subscripts,
+  # making the ghost text (and so its highlight span) the wrong length.
+  emulate -L zsh
   _zss_clear_region_highlight
-  [[ -z $ZSS_SUGGESTION ]] && return
-  local rest=${ZSS_SUGGESTION#$BUFFER}
+  # No suggestion (or one that no longer extends the buffer) must also wipe
+  # POSTDISPLAY: leaving the previous ghost text there with its highlight
+  # removed made it look like typed text, e.g. "git c" + "onfig user.email"
+  # turning into "git clonfig user.email" once "l" found no match.
+  if [[ -z $ZSS_SUGGESTION || ${ZSS_SUGGESTION[1,${#BUFFER}]} != "$BUFFER" ]]; then
+    _zss_clear_suggestion
+    return
+  fi
+  local rest=${ZSS_SUGGESTION[${#BUFFER}+1,-1]}
   local style=${ZSS_HIGHLIGHT_STYLE:-${ZSS_HL_STYLES[suggestion]:-fg=8}}
   POSTDISPLAY=$rest
   region_highlight+=("${#BUFFER} $(( ${#BUFFER} + ${#rest} )) ${style} memo=zss")

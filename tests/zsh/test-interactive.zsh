@@ -37,6 +37,14 @@ setopt nonomatch
 export PATH="${0:A:h}/../../bin:\$PATH"
 setopt INC_APPEND_HISTORY HIST_FCNTL_LOCK
 source "$PLUGIN"
+# Test-only probe (^Xq): appends the live ZLE ghost-suggestion state to a
+# file, since POSTDISPLAY/region_highlight can't be read back from the tty.
+# (^T is avoided: it is the tty STATUS character on macOS/BSD.)
+_zss_test_dump() {
+  print -r -- "BUFFER=[\$BUFFER] POSTDISPLAY=[\$POSTDISPLAY] RH=[\${(j:|:)region_highlight}]" >> "$WORK/zle-state"
+}
+zle -N _zss_test_dump
+bindkey '^Xq' _zss_test_dump
 EOF
 
 typeset -F SECONDS=0
@@ -95,6 +103,39 @@ else
 fi
 
 # clear the partial line before the next scenario (^U: kill-whole-line)
+zpty -w -n zsstest $'\x15'
+_zss_pty_read_until 'ZSSPROMPT%' 3 >/dev/null
+
+# --- regression: a keystroke that breaks the match clears the ghost text.
+# "echo hel" shows ghost "lo world"; typing "x" (no history match) used to
+# leave POSTDISPLAY="lo world" with its highlight removed, so the line read
+# "echo helxlo world" as if all of it had been typed.
+: >| "$WORK/zle-state"
+zpty -w -n zsstest 'echo hel'
+_zss_pty_read_until 'lo world' 5 >/dev/null
+zpty -w -n zsstest $'\x18q'   # ^Xq: _zss_test_dump
+zpty -w -n zsstest 'x'
+zpty -w -n zsstest $'\x18q'
+_zss_pty_read_until 'helx' 5 >/dev/null
+for _i in {1..40}; do
+  (( $(wc -l < "$WORK/zle-state") >= 2 )) && break
+  sleep 0.05
+done
+_states=("${(@f)$(<"$WORK/zle-state")}")
+# Only the ghost's own `memo=zss` entries matter here; the syntax
+# highlighter's `memo=zss-hl` entries for "echo" ride along in RH too.
+if [[ ${_states[1]} == 'BUFFER=[echo hel] POSTDISPLAY=[lo world] RH=['* \
+   && "|${${_states[1]#*RH=\[}%\]}|" == *'|8 16 fg=8 memo=zss|'* ]]; then
+  pass "ghost text and its highlight span match the suggestion exactly"
+else
+  fail "ghost text or its highlight span is wrong (got: '${_states[1]}')"
+fi
+if [[ ${_states[2]} == 'BUFFER=[echo helx] POSTDISPLAY=[] RH=['* \
+   && "|${${_states[2]#*RH=\[}%\]}|" != *'memo=zss|'* ]]; then
+  pass "a keystroke that breaks the match clears the stale ghost text and highlight"
+else
+  fail "stale ghost text or highlight survived a non-matching keystroke (got: '${_states[2]}')"
+fi
 zpty -w -n zsstest $'\x15'
 _zss_pty_read_until 'ZSSPROMPT%' 3 >/dev/null
 
