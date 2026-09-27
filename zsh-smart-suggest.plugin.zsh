@@ -106,7 +106,7 @@ _zss_is_blocked() {
 _zss_is_locally_deleted() {
   # Exact-match, in-memory-only, per-shell cache of commands `zss-remove-
   # current` (^X^D) just deleted from THIS shell's history: `fc -RI` (used
-  # by _zss_refresh below to pick up cross-terminal history changes) only
+  # by _zss_refresh_history below to pick up cross-terminal history changes) only
   # ever ADDS entries it hasn't seen yet — it can't drop one this shell
   # already loaded into $history, even after it's gone from the histfile.
   # Without this, deleting the suggestion you're looking at would leave it
@@ -127,9 +127,17 @@ _zss_colors_file() {
   print -r -- "$(_zss_data_dir)/colors.conf"
 }
 
-_zss_refresh() {
-  local hf=$(_zss_histfile) bf=$(_zss_blocklist_file) cf=$(_zss_colors_file)
-  local hist_mtime=0 block_mtime=0 colors_mtime=0
+_zss_refresh_history() {
+  # Runs from preexec, NOT precmd: by precmd time zsh has already linked the
+  # still-empty line about to be edited into its history ring, and `fc -RI`
+  # then frees every entry it re-reads as a duplicate while decrementing the
+  # history counter, without renumbering that pending line. ZLE starts on a
+  # history number no entry has any more, so Up/Down (up-line-or-history and
+  # friends) silently do nothing at that prompt. By preexec, zsh has already
+  # unlinked the pending line (in hend()), so the counters stay consistent.
+  # Same path as _zss_histfile, inlined: preexec runs before every command,
+  # so this skips that function's `$(...)` fork.
+  local hf=${ZSS_HISTFILE:-${HISTFILE:-$HOME/.zsh_history}} hist_mtime=0
   local -A st
   if zstat -H st -- "$hf" 2>/dev/null; then
     hist_mtime=${st[mtime]}
@@ -139,6 +147,12 @@ _zss_refresh() {
     _zss_last_hist_mtime=$hist_mtime
     _zss_no_match_prefix=""
   fi
+}
+
+_zss_refresh() {
+  local bf=$(_zss_blocklist_file) cf=$(_zss_colors_file)
+  local block_mtime=0 colors_mtime=0
+  local -A st
   # A command run in THIS shell lands in $history immediately, with no
   # histfile write (and so no mtime change above) until the shell saves it —
   # which, without INC_APPEND_HISTORY, can be as late as shell exit. Without
@@ -459,11 +473,14 @@ autoload -Uz add-zsh-hook 2>/dev/null
 if (( ${+functions[add-zsh-hook]} )); then
   add-zsh-hook zshaddhistory _zss_zshaddhistory
   add-zsh-hook precmd _zss_refresh
+  add-zsh-hook preexec _zss_refresh_history
 else
   typeset -ga zshaddhistory_functions
   zshaddhistory_functions+=(_zss_zshaddhistory)
   typeset -ga precmd_functions
   precmd_functions+=(_zss_refresh)
+  typeset -ga preexec_functions
+  preexec_functions+=(_zss_refresh_history)
 fi
 
 # ---------------------------------------------------------------------------

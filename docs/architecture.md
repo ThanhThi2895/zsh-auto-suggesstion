@@ -29,10 +29,16 @@
   had no match anywhere in history, so typing further into text that will
   never match doesn't re-scan on every keystroke.
 
-  A `precmd` hook compares the history file's, the block list's, and
-  `colors.conf`'s mtimes against what was last seen; on a change it runs
-  `fc -RI` (merge new entries without duplicating what's already in memory)
-  and/or reloads the block rules/colours. This is what lets a command run in
+  A `preexec` hook compares the history file's mtime against what was last
+  seen and, on a change, runs `fc -RI` (merge new entries without
+  duplicating what's already in memory); a `precmd` hook does the same for
+  the block list's and `colors.conf`'s mtimes and reloads the block
+  rules/colours. `fc -RI` must not run from `precmd`: there, zsh has already
+  linked the pending command line into its history ring, and the reload
+  leaves `HISTNO` pointing at no entry, so Up/Down do nothing at that
+  prompt (`tests/zsh/test-history-nav.zsh`). The cost is that another
+  terminal's new commands are picked up once this shell runs its next
+  command, not on an empty Enter. This is what lets a command run in
   one terminal show up as a suggestion in another without restarting either
   — but `fc -RI` only ever *adds* entries it hasn't seen yet, so a *deleted*
   entry stays in an already-running shell's in-memory `$history` until that
