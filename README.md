@@ -263,3 +263,7 @@ zsh tests/zsh/run.zsh
 
 See `docs/architecture.md` for how the pieces fit together and the history
 file format notes (metafication, multi-line entries, locking).
+
+## License
+
+MIT — see [LICENSE](LICENSE).
