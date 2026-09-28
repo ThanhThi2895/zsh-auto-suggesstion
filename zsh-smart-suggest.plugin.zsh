@@ -331,34 +331,26 @@ _zss_call_orig() {
   fi
 }
 
-_zss_self_insert() {
-  _zss_call_orig self-insert
+_zss_edit_and_suggest() {
+  _zss_call_orig $1
   _zss_suggest
 }
-_zss_widget_wrap self-insert _zss_self_insert
-
-_zss_backward_delete_char() {
-  _zss_call_orig backward-delete-char
-  _zss_suggest
-}
-_zss_widget_wrap backward-delete-char _zss_backward_delete_char
-
-if (( ${+widgets[bracketed-paste]} )); then
-  _zss_bracketed_paste() {
-    _zss_call_orig bracketed-paste
-    _zss_suggest
-  }
-  _zss_widget_wrap bracketed-paste _zss_bracketed_paste
-fi
-
-_zss_history_nav() {
-  local widget_name=$1
-  _zss_call_orig $widget_name
-  _zss_suggest
-}
-for _zss_w in up-line-or-history down-line-or-history up-line-or-search down-line-or-search history-search-backward history-search-forward; do
+# Every widget that can change BUFFER must re-run _zss_suggest afterwards:
+# one that doesn't leaves the previous ghost text in POSTDISPLAY, e.g. ^U
+# (kill-whole-line) emptying the line but still showing the old suggestion.
+for _zss_w in \
+    self-insert bracketed-paste \
+    backward-delete-char delete-char delete-char-or-list \
+    backward-delete-word delete-word backward-kill-word kill-word \
+    backward-kill-line kill-line kill-whole-line kill-buffer \
+    yank yank-pop transpose-chars transpose-words \
+    capitalize-word up-case-word down-case-word undo redo \
+    vi-backward-delete-char vi-delete-char vi-backward-kill-word \
+    vi-kill-line vi-kill-eol \
+    up-line-or-history down-line-or-history up-line-or-search \
+    down-line-or-search history-search-backward history-search-forward; do
   (( ${+widgets[$_zss_w]} )) || continue
-  eval "_zss_${_zss_w//-/_}() { _zss_history_nav $_zss_w }"
+  eval "_zss_${_zss_w//-/_}() { _zss_edit_and_suggest $_zss_w }"
   _zss_widget_wrap $_zss_w _zss_${_zss_w//-/_}
 done
 unset _zss_w

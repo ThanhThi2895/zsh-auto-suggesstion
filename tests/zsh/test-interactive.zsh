@@ -139,6 +139,39 @@ fi
 zpty -w -n zsstest $'\x15'
 _zss_pty_read_until 'ZSSPROMPT%' 3 >/dev/null
 
+# --- regression: kill widgets re-evaluate the suggestion. Only self-insert,
+# backward-delete-char, paste and history widgets used to call _zss_suggest,
+# so ^U (kill-whole-line, what Cmd+Delete sends) emptied the buffer but left
+# the ghost "lo world" drawn after an empty prompt; ^W (backward-kill-word)
+# likewise left the old ghost behind a buffer it no longer extends.
+: >| "$WORK/zle-state"
+zpty -w -n zsstest 'echo hel'
+_zss_pty_read_until 'lo world' 5 >/dev/null
+zpty -w -n zsstest $'\x15'    # ^U: kill-whole-line
+zpty -w -n zsstest $'\x18q'
+zpty -w -n zsstest 'echo hello wor'
+_zss_pty_read_until 'ld' 5 >/dev/null
+zpty -w -n zsstest $'\x17'    # ^W: backward-kill-word
+zpty -w -n zsstest $'\x18q'
+for _i in {1..40}; do
+  (( $(wc -l < "$WORK/zle-state") >= 2 )) && break
+  sleep 0.05
+done
+_states=("${(@f)$(<"$WORK/zle-state")}")
+if [[ ${_states[1]} == 'BUFFER=[] POSTDISPLAY=[] RH=['* \
+   && "|${${_states[1]#*RH=\[}%\]}|" != *'memo=zss|'* ]]; then
+  pass "^U (kill-whole-line) clears the ghost text and its highlight"
+else
+  fail "stale ghost text survived ^U (got: '${_states[1]}')"
+fi
+if [[ ${_states[2]} == 'BUFFER=[echo hello ] POSTDISPLAY=[world] RH=['* ]]; then
+  pass "^W (backward-kill-word) re-renders the ghost text for the shorter buffer"
+else
+  fail "ghost text was not re-rendered after ^W (got: '${_states[2]}')"
+fi
+zpty -w -n zsstest $'\x15'
+_zss_pty_read_until 'ZSSPROMPT%' 3 >/dev/null
+
 zpty -w -n zsstest $'echo hello world\r'
 _zss_pty_read_until 'ZSSPROMPT%' 10 >/dev/null
 zpty -w -n zsstest 'ech'
