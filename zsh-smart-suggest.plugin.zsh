@@ -302,6 +302,24 @@ _zss_suggest() {
   _zss_render
 }
 
+_zss_redraw() {
+  # Completion (Tab) deletes and re-inserts the word under the cursor even
+  # when it only lists candidates, and ZLE shrinks region_highlight spans
+  # over deleted text without growing them back: the ghost's "3 18" span
+  # after "git" collapses to "3 3", leaving POSTDISPLAY drawn in the normal
+  # colour as if it had been typed. _zss_complete below hides the ghost
+  # for the standard completion widgets, but a Tab bound to anything else
+  # (e.g. a completion plugin's own widget) still runs unwrapped, so also
+  # re-apply the ghost's span before every redraw; _zss_render also drops a
+  # suggestion the new buffer no longer extends, e.g. "git-lfs".
+  [[ -n $ZSS_SUGGESTION ]] && _zss_render
+  # add-zle-hook-widget stops at the first hook that fails, and the syntax
+  # highlighter's hook runs after this one: a non-zero status here (e.g. no
+  # suggestion) would leave its collapsed spans unrepaired.
+  return 0
+}
+add-zle-hook-widget zle-line-pre-redraw _zss_redraw
+
 # ---------------------------------------------------------------------------
 # Widgets
 # ---------------------------------------------------------------------------
@@ -311,12 +329,17 @@ _zss_widget_wrap() {
   # Saves whatever <widget-name> currently points to under
   # `_zss_orig_<widget-name>` (skipped for plain builtins/unset widgets,
   # since `_zss_call_orig` falls back to `zle .<widget-name>` for those),
-  # then installs <new-function-name> as the widget.
+  # then installs <new-function-name> as the widget. A compinit completion
+  # widget ("completion:.expand-or-complete:_main_complete") is re-created
+  # with `zle -C`; falling back to the builtin would bypass compsys.
   local orig=$1 new=$2
   local target=${widgets[$orig]:-}
   case $target in
     (user:*)
       zle -N _zss_orig_$orig ${target#user:}
+      ;;
+    (completion:*)
+      zle -C _zss_orig_$orig ${${(s.:.)target}[2,3]}
       ;;
   esac
   zle -N $orig $new
@@ -354,6 +377,32 @@ for _zss_w in \
   _zss_widget_wrap $_zss_w _zss_${_zss_w//-/_}
 done
 unset _zss_w
+
+_zss_complete() {
+  # Hide the ghost while completion runs: it deletes and re-inserts the word
+  # under the cursor, collapsing the ghost's highlight span, and during menu
+  # selection (`zstyle ':completion:*' menu select`) the ghost would sit next
+  # to each candidate the menu inserts, looking like part of the line.
+  _zss_clear_suggestion
+  _zss_call_orig $WIDGET
+  _zss_suggest
+}
+
+_zss_wrap_completion_widgets() {
+  # Deferred to the first prompt: compinit re-creates every completion
+  # widget with `zle -C`, so if .zshrc runs it after sourcing this file, a
+  # wrapper installed at source time would be silently replaced.
+  add-zle-hook-widget -d zle-line-init _zss_wrap_completion_widgets
+  local w
+  for w in complete-word delete-char-or-list expand-or-complete \
+      expand-or-complete-prefix list-choices menu-complete \
+      menu-expand-or-complete reverse-menu-complete; do
+    (( ${+widgets[$w]} )) || continue
+    [[ ${widgets[$w]} == user:_zss_complete ]] && continue
+    _zss_widget_wrap $w _zss_complete
+  done
+}
+add-zle-hook-widget zle-line-init _zss_wrap_completion_widgets
 
 _zss_accept_line() {
   _zss_clear_suggestion

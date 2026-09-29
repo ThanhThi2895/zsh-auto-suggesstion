@@ -16,6 +16,7 @@ zmodload zsh/parameter
 
 typeset -gA ZSS_HL_STYLES
 typeset -g _zss_hl_last_buffer=""
+typeset -g _zss_hl_last_regions=""
 typeset -ga _ZSS_HL_PRECOMMANDS
 _ZSS_HL_PRECOMMANDS=(sudo command builtin exec noglob nocorrect env)
 
@@ -306,11 +307,19 @@ _zss_hl_add_region() {
 _zss_hl_redraw() {
   (( ZSS_HL_DISABLE )) && return
   (( PENDING > 0 )) && return
-  [[ $BUFFER == $_zss_hl_last_buffer ]] && return
+  # Same buffer is not enough to skip: ZLE shifts region_highlight spans
+  # whenever it edits the line, and completion deletes and re-inserts the
+  # word under the cursor even when the text ends up unchanged (e.g. a Tab
+  # that only lists candidates), collapsing "0 3" for "git" to "3 3". So
+  # repaint unless our own entries are also exactly as we last left them.
+  [[ $BUFFER == $_zss_hl_last_buffer \
+     && ${(j:|:)${(M)region_highlight:#*memo=zss-hl}} == $_zss_hl_last_regions ]] && return
   _zss_hl_last_buffer=$BUFFER
   _zss_hl_clear_region_highlight
-  (( ${#BUFFER} > ZSS_HL_MAX_BUFFER )) && return
-  _zss_hl_scan "$BUFFER" _zss_hl_add_region
+  if (( ${#BUFFER} <= ZSS_HL_MAX_BUFFER )); then
+    _zss_hl_scan "$BUFFER" _zss_hl_add_region
+  fi
+  _zss_hl_last_regions=${(j:|:)${(M)region_highlight:#*memo=zss-hl}}
 }
 
 add-zle-hook-widget zle-line-pre-redraw _zss_hl_redraw
